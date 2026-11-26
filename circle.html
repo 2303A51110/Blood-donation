@@ -1,43 +1,171 @@
-#Improve my Emergency Blood Circle HTML page.
-#Requirements:
-#* Keep same inputs (Name, Blood Group, Need Blood)
-#* Add simple styling (colors, center content, better buttons)
-#* Add JavaScript functions:
-# * addMember(): save name and blood group in localStorage
-# * sendAlert(): show matching members based on blood group or O-
-#* Show results in a list
-#* Show alert message when member is added
-#* Show "No members found" if no match
-#Output:
-#* Give full working code (HTML + CSS + JavaScript)
-#* Keep it simple and easy to understand
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-     <title>Emergency Circle</title>
+<meta charset="UTF-8">
+<title>Blood Priority Queue</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(to right, #ff4b5c, #ff7a7a);
+    text-align: center;
+    color: white;
+}
+
+.container {
+    background: white;
+    color: black;
+    width: 380px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+input, select {
+    width: 90%;
+    padding: 10px;
+    margin: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    width: 95%;
+    padding: 10px;
+    background: #ff4b5c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #e63e50;
+}
+
+li {
+    background: #ffe5e8;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 8px;
+}
+</style>
 </head>
 
 <body>
 
-     <h1>🚨 Emergency Blood Circle</h1>
+<h1>🚨 Blood Priority Queue</h1>
 
-     <h3>Create Circle Member</h3>
-     <input type="text" id="name" placeholder="Name"><br><br>
-     <input type="text" id="blood" placeholder="Blood Group"><br><br>
-     <button onclick="addMember()">Add Member</button>
+<div class="container">
 
-     <hr>
+    <h3>Add Donor</h3>
+    <input type="text" id="donorName" placeholder="Donor Name">
+    <input type="text" id="donorBlood" placeholder="Blood Group (Ex: A+)">
+    <button onclick="addDonor()">Add Donor</button>
 
-     <h3>Emergency Request</h3>
-     <input type="text" id="needBlood" placeholder="Blood Needed"><br><br>
-     <button onclick="sendAlert()">Send Alert</button>
+    <hr>
 
-     <h3>Alert Sent To:</h3>
-     <ul id="result"></ul>
+    <h3>Add Emergency Patient</h3>
+    <input type="text" id="pname" placeholder="Patient Name">
+    <input type="text" id="pblood" placeholder="Blood Group (Ex: O+)">
 
-     <script src="script.js"></script>
+    <select id="priority">
+        <option value="3">🔴 Critical</option>
+        <option value="2">🟠 Medium</option>
+        <option value="1">🟢 Low</option>
+    </select>
+
+    <button onclick="addRequest()">Add Request</button>
+
+    <hr>
+
+    <button onclick="matchDonors()">💉 Match Donors to Patients</button>
+
+    <h3>Donation Order:</h3>
+    <ul id="result"></ul>
+
+</div>
+
+<script>
+// LocalStorage helpers
+function getRequests() { return JSON.parse(localStorage.getItem("requests")) || []; }
+function saveRequests(data) { localStorage.setItem("requests", JSON.stringify(data)); }
+
+function getDonors() { return JSON.parse(localStorage.getItem("donors")) || []; }
+function saveDonors(data) { localStorage.setItem("donors", JSON.stringify(data)); }
+
+// Add donor
+function addDonor() {
+    let name = document.getElementById("donorName").value.trim();
+    let blood = document.getElementById("donorBlood").value.trim();
+    if(!name || !blood) { alert("⚠ Fill all donor fields"); return; }
+
+    let donors = getDonors();
+    donors.push({ name, blood });
+    saveDonors(donors);
+    alert("✅ Donor Added");
+    document.getElementById("donorName").value = "";
+    document.getElementById("donorBlood").value = "";
+}
+
+// Add patient request
+function addRequest() {
+    let name = document.getElementById("pname").value.trim();
+    let blood = document.getElementById("pblood").value.trim();
+    let priority = parseInt(document.getElementById("priority").value);
+
+    if(!name || !blood) { alert("⚠ Fill all fields"); return; }
+
+    let requests = getRequests();
+    requests.push({ name, blood, priority, time: Date.now() });
+    saveRequests(requests);
+
+    alert("✅ Request Added");
+
+    document.getElementById("pname").value = "";
+    document.getElementById("pblood").value = "";
+}
+
+// Blood Compatibility Check (simplified)
+function compatible(donor, patient) {
+    // exact match OR universal donor O-
+    if(donor === patient || donor === "O-") return true;
+    return false;
+}
+
+// Match donors to patients
+function matchDonors() {
+    let requests = getRequests();
+    let donors = getDonors();
+    requests.sort((a,b)=> b.priority - a.priority || a.time - b.time);
+
+    let list = document.getElementById("result");
+    list.innerHTML = "";
+
+    if(requests.length === 0) { list.innerHTML = "<li>No patient requests</li>"; return; }
+    if(donors.length === 0) { list.innerHTML = "<li>No donors available</li>"; return; }
+
+    requests.forEach((r, index) => {
+        let donorFound = donors.find(d => compatible(d.blood, r.blood));
+        let li = document.createElement("li");
+
+        let pText = r.priority == 3 ? "🔴 Critical" :
+                    r.priority == 2 ? "🟠 Medium" : "🟢 Low";
+
+        if(donorFound){
+            li.textContent = `${r.name} (${r.blood}) - ${pText} → Donate by: ${donorFound.name} (${donorFound.blood})`;
+            // Remove donor after matching
+            donors = donors.filter(d => d !== donorFound);
+        } else {
+            li.textContent = `${r.name} (${r.blood}) - ${pText} → ❌ No compatible donor`;
+        }
+
+        list.appendChild(li);
+    });
+
+    saveDonors(donors); // update donors list after matching
+}
+</script>
 
 </body>
-
 </html>
