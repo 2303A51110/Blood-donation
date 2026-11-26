@@ -1,0 +1,36 @@
+#Create an HTML page titled "Need Blood" with a header showing "🩸 Blood Donation Hub".
+#Add a form with heading "Request Blood" containing inputs for Full Name, Email, Blood Group, and City (all required).
+#Include a submit button labeled "Request".
+#Link an external CSS file "style.css" for styling and a JavaScript file "script.js" for functionality.
+#Ensure the page is mobile-responsive using the viewport meta tag.
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Need Blood</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h2 class="logo">🩸 Blood Donation Hub</h2>
+    </header>
+
+    <form id="requestForm">
+        <h2>Request Blood</h2>
+
+        <input type="text" placeholder="Full Name" required>
+        <input type="email" placeholder="Email" required>
+        <input type="text" placeholder="Blood Group" required>
+        <input type="text" placeholder="City" required>
+
+        <button type="submit">Request</button>
+    </form>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

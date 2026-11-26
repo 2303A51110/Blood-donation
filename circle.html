@@ -1,0 +1,43 @@
+#Improve my Emergency Blood Circle HTML page.
+#Requirements:
+#* Keep same inputs (Name, Blood Group, Need Blood)
+#* Add simple styling (colors, center content, better buttons)
+#* Add JavaScript functions:
+# * addMember(): save name and blood group in localStorage
+# * sendAlert(): show matching members based on blood group or O-
+#* Show results in a list
+#* Show alert message when member is added
+#* Show "No members found" if no match
+#Output:
+#* Give full working code (HTML + CSS + JavaScript)
+#* Keep it simple and easy to understand
+<!DOCTYPE html>
+<html>
+
+<head>
+     <title>Emergency Circle</title>
+</head>
+
+<body>
+
+     <h1>🚨 Emergency Blood Circle</h1>
+
+     <h3>Create Circle Member</h3>
+     <input type="text" id="name" placeholder="Name"><br><br>
+     <input type="text" id="blood" placeholder="Blood Group"><br><br>
+     <button onclick="addMember()">Add Member</button>
+
+     <hr>
+
+     <h3>Emergency Request</h3>
+     <input type="text" id="needBlood" placeholder="Blood Needed"><br><br>
+     <button onclick="sendAlert()">Send Alert</button>
+
+     <h3>Alert Sent To:</h3>
+     <ul id="result"></ul>
+
+     <script src="script.js"></script>
+
+</body>
+
+</html>
